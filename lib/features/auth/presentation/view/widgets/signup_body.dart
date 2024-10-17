@@ -1,11 +1,11 @@
-import 'package:chat_app/features/auth/presentation/views/widgets/email_field.dart';
-import 'package:chat_app/features/auth/presentation/views/widgets/login_row.dart';
-import 'package:chat_app/features/auth/presentation/views/widgets/logo_widget.dart';
-import 'package:chat_app/features/auth/presentation/views/widgets/password_field.dart';
-import 'package:chat_app/features/auth/presentation/views/widgets/phone_field.dart';
-import 'package:chat_app/features/auth/presentation/views/widgets/signup_button.dart';
-import 'package:chat_app/features/auth/presentation/views/widgets/signup_title.dart';
-import 'package:chat_app/features/auth/presentation/views/widgets/username_field.dart';
+import 'package:chat_app/features/auth/presentation/view/widgets/email_field.dart';
+import 'package:chat_app/features/auth/presentation/view/widgets/login_row.dart';
+import 'package:chat_app/features/auth/presentation/view/widgets/logo_widget.dart';
+import 'package:chat_app/features/auth/presentation/view/widgets/password_field.dart';
+import 'package:chat_app/features/auth/presentation/view/widgets/phone_field.dart';
+import 'package:chat_app/features/auth/presentation/view/widgets/signup_button.dart';
+import 'package:chat_app/features/auth/presentation/view/widgets/signup_title.dart';
+import 'package:chat_app/features/auth/presentation/view/widgets/username_field.dart';
 import 'package:chat_app/features/home/presentation/views/home_view.dart';
 import 'package:flutter/material.dart';
 
