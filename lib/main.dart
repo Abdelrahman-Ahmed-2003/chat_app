@@ -1,10 +1,5 @@
-<<<<<<< Updated upstream
-import 'package:chat_app/features/auth/presentation/views/login.dart';
-=======
+
 import 'package:chat_app/features/auth/presentation/views/login_view.dart';
-import 'package:chat_app/features/auth/presentation/views/signup_view.dart';
-import 'package:chat_app/features/home/presentation/views/home_view.dart';
->>>>>>> Stashed changes
 import 'package:chat_app/features/splashScreen/presentation/views/splachScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,13 +25,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
-<<<<<<< Updated upstream
-        '/login': (context) => const Login(),
-=======
         '/login': (context) => const LoginView(),
-        '/signup': (context) => const SignupView(),
-        '/home': (context) => const HomeView(),
->>>>>>> Stashed changes
+
       },
     );
   }
