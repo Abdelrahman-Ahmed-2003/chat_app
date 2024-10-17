@@ -1,3 +1,4 @@
+import 'package:chat_app/core/constant/asset_images.dart';
 import 'package:chat_app/core/themes/colors_app.dart';
 import 'package:chat_app/core/themes/styles.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,7 @@ class _SplashPageState extends State<SplashPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.asset('assets/logo/logo.png'),
+            Image.asset(AssetImages.logo),
             Text(
               'WhatsUp',
               style: Styles.textSytle24.copyWith(
