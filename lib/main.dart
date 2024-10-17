@@ -1,4 +1,6 @@
 
+import 'package:chat_app/features/auth/presentation/view/login_view.dart';
+import 'package:chat_app/features/splashScreen/presentation/views/splachScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -20,8 +22,11 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.interTextTheme(),
         useMaterial3: true,
       ),
-      
-      
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SplashScreen(),
+        '/login': (context) => const LoginView(),
+      },
     );
   }
 }
