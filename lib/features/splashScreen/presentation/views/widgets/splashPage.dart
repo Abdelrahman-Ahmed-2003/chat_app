@@ -13,8 +13,9 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+
+    // TODO: implement initState
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacementNamed(context, '/login');
     });
@@ -25,26 +26,26 @@ class _SplashPageState extends State<SplashPage> {
     return Scaffold(
         body: SafeArea(
             child: Center(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Image.asset(AssetImages.logo),
-            Text(
-              'WhatsUp',
-              style: Styles.textSytle24.copyWith(
-                color: ColorApp.primaryColor,
-              ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Image.asset(
+            AssetImages.logo,
+          ),
+          Text(
+            'WhatsUp',
+            style: Styles.textSytle24.copyWith(
+              color: ColorApp.primaryColor,
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            Text(
-              'The best chat App of this is century',
-              style: Styles.textSytle15,
-            ),
-          ],
-        ),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.02,
+          ),
+          Text(
+            'The best chat App of this is century',
+            style: Styles.textSytle15,
+          ),
+        ],
       ),
     )));
   }
