@@ -50,7 +50,7 @@ class _LoginBodyState extends State<LoginBody> {
               SizedBox(height: MediaQuery.of(context).size.height * 0.1),
               LoginButton(
                   onScuccess: () {
-                    Navigator.pushReplacementNamed(context, '/home');
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const HomeView()));
                   },
                   emailController: emailController,
                   passwordController: passwordController),
