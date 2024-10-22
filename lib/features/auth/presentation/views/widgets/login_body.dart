@@ -1,9 +1,10 @@
-import 'package:chat_app/features/auth/presentation/view/widgets/email_field.dart';
-import 'package:chat_app/features/auth/presentation/view/widgets/login_button.dart';
-import 'package:chat_app/features/auth/presentation/view/widgets/login_title.dart';
-import 'package:chat_app/features/auth/presentation/view/widgets/logo_widget.dart';
-import 'package:chat_app/features/auth/presentation/view/widgets/password_field.dart';
-import 'package:chat_app/features/auth/presentation/view/widgets/register_row.dart';
+import 'package:chat_app/features/auth/presentation/views/widgets/email_field.dart';
+import 'package:chat_app/features/auth/presentation/views/widgets/login_button.dart';
+import 'package:chat_app/features/auth/presentation/views/widgets/login_title.dart';
+import 'package:chat_app/features/auth/presentation/views/widgets/logo_widget.dart';
+import 'package:chat_app/features/auth/presentation/views/widgets/password_field.dart';
+import 'package:chat_app/features/auth/presentation/views/widgets/register_row.dart';
+import 'package:chat_app/features/home/presentation/views/home_view.dart';
 import 'package:flutter/material.dart';
 
 class LoginBody extends StatefulWidget {
