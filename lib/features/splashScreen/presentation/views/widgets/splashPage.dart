@@ -1,6 +1,7 @@
 import 'package:chat_app/core/constant/asset_images.dart';
 import 'package:chat_app/core/themes/colors_app.dart';
 import 'package:chat_app/core/themes/styles.dart';
+import 'package:chat_app/features/auth/presentation/views/login_view.dart';
 import 'package:flutter/material.dart';
 
 class SplashPage extends StatefulWidget {
@@ -17,7 +18,7 @@ class _SplashPageState extends State<SplashPage> {
 
     // TODO: implement initState
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const LoginView()));
     });
   }
 
