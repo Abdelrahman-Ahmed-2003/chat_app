@@ -1,5 +1,4 @@
 import 'package:chat_app/features/profile/presentation/views/profile_view.dart';
-import 'package:chat_app/features/new_group/presentation/views/new_group_view.dart';
 import 'package:flutter/material.dart';
 
 class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
@@ -48,9 +47,9 @@ class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
               PopupMenuItem<String>(
                 value: 'New Group',
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const NewGroupView(),
-                  ));
+                  // Navigator.of(context).push(MaterialPageRoute(
+                  //   builder: (context) => const NewGroupView(),
+                  // ));
                 },
                 child: const Text('New Group',
                     style: TextStyle(fontWeight: FontWeight.bold)),
