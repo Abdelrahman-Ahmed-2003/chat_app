@@ -15,6 +15,7 @@ class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
           width: 0.5,
         ),
       ),
+      backgroundColor: Colors.grey.withOpacity(.05),
       title: const Text(
         'WhatsUp',
         style: TextStyle(
