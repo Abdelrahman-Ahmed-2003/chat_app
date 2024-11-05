@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChatBody extends StatelessWidget {
   const ChatBody({super.key});
@@ -10,36 +11,36 @@ class ChatBody extends StatelessWidget {
       itemBuilder: (context, index) {
         return InkWell(
           onTap: () {
-            print('User Message');
+            
           },
-          child: const ListTile(
+          child: ListTile(
             leading: CircleAvatar(
               backgroundColor: Colors.grey,
-              radius: 30,
-              child: Icon(
+              radius: 30.r,
+              child: const Icon(
                 Icons.person,
                 color: Colors.white,
               ),
             ),
-            title: Text('User Name'),
+            title: Text('User Name',style: TextStyle(fontSize: 20.sp),),
             subtitle: Row(
               children: [
-                Icon(Icons.done_all, color: Colors.blueGrey, size: 20),
-                SizedBox(width: 5),
+                Icon(Icons.done_all, color: Colors.blueGrey, size: MediaQuery.of(context).size.height * 0.02),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.005),
                 Text(
                   'This is the last message',
-                  style: TextStyle(color: Colors.blueGrey),
+                  style: TextStyle(color: Colors.blueGrey,fontSize: 14.sp),
                 )
               ],
             ),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('10:00'),
+                Text('10:00',style: TextStyle(fontSize: 14.sp),),
                 Flexible(
                     child: CircleAvatar(
-                  radius: 13.0,
-                  child: Text('2'),
+                  radius: 13.0.r,
+                  child: Text('2',style: TextStyle(fontSize: 14.sp),),
                 ))
               ],
             ),

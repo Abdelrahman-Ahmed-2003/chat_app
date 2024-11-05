@@ -1,5 +1,6 @@
 import 'package:chat_app/features/profile/presentation/views/profile_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
   const ChatViewAppbar({
@@ -9,17 +10,17 @@ class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         side: BorderSide(
           color: Colors.grey,
-          width: 0.5,
+          width: 0.5.w,
         ),
       ),
       backgroundColor: Colors.grey.withOpacity(.05),
-      title: const Text(
+      title: Text(
         'WhatsUp',
         style: TextStyle(
-          fontSize: 23,
+          fontSize: 23.sp,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -37,7 +38,7 @@ class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
           ),
           color: Theme.of(context).scaffoldBackgroundColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(10.r),
             side: const BorderSide(
               color: Colors.grey,
               width: 0.5,
@@ -52,13 +53,13 @@ class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
                   //   builder: (context) => const NewGroupView(),
                   // ));
                 },
-                child: const Text('New Group',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('New Group',
+                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15.sp)),
               ),
               PopupMenuItem<String>(
                 value: 'Profile',
-                child: const Text('Profile',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('Profile',
+                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15.sp)),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const ProfileView(),
@@ -67,8 +68,8 @@ class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
               ),
               PopupMenuItem<String>(
                 value: 'Log out',
-                child: const Text('Log out',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('Log out',
+                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15.sp)),
                 onTap: () {
                   //log out
                 },
