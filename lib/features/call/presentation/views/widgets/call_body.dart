@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CallBody extends StatelessWidget {
   const CallBody({super.key});
@@ -13,15 +14,15 @@ class CallBody extends StatelessWidget {
             
           },
           child: ListTile(
-            leading: const CircleAvatar(
+            leading: CircleAvatar(
               backgroundColor: Colors.grey,
-              radius: 30,
-              child: Icon(Icons.person,color: Colors.white,),
+              radius: 30.r,
+              child: const Icon(Icons.person,color: Colors.white,),
             ),
-            title: const Text('User Name'),
-            subtitle: const Text(
+            title: Text('User Name',style: TextStyle(fontSize: 18.sp),),
+            subtitle: Text(
               'Today 12:00 PM',
-              style: TextStyle(color: Colors.blueGrey),
+              style: TextStyle(color: Colors.blueGrey,fontSize: 14.sp),
             ),
             trailing: IconButton(onPressed: (){}, icon: const Icon(Icons.call)),
           ),
