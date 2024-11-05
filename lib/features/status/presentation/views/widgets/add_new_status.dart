@@ -1,5 +1,6 @@
 import 'package:chat_app/core/themes/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AddNewStatus extends StatelessWidget {
   const AddNewStatus({super.key});
@@ -9,9 +10,9 @@ class AddNewStatus extends StatelessWidget {
     return ListTile(
       leading: Stack(
         children: [
-          const CircleAvatar(
-            radius: 30,
-            backgroundImage: AssetImage('assets/images/logo.png'),
+          CircleAvatar(
+            radius: 30.r,
+            backgroundImage: const AssetImage('assets/images/logo.png'),
           ),
           Positioned(
             bottom: 0,
@@ -24,7 +25,7 @@ class AddNewStatus extends StatelessWidget {
                 color: Colors.white,
                 border: Border.all(
                   color: Colors.green,
-                  width: 2,
+                  width: 2.w,
                 ),
               ),
               child: Center(
@@ -33,10 +34,10 @@ class AddNewStatus extends StatelessWidget {
                   constraints:
                       const BoxConstraints(), // Remove default constraints
                   onPressed: () {},
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.add,
                     color: Colors.green,
-                    size: 15,
+                    size: MediaQuery.of(context).size.height * 0.015,
                   ),
                 ),
               ),
@@ -50,7 +51,7 @@ class AddNewStatus extends StatelessWidget {
       ),
       subtitle: Text(
         "Tap to add new status",
-        style: TextStyle(color: Colors.grey[600]),
+        style: TextStyle(color: Colors.grey[600],fontSize: 14.sp),
       ),
     );
   }

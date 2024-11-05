@@ -1,5 +1,6 @@
 import 'package:chat_app/core/themes/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RecentStatus extends StatelessWidget {
   const RecentStatus({super.key});
@@ -11,9 +12,9 @@ class RecentStatus extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: 5, itemBuilder: (BuildContext context, int index) { 
         return ListTile(
-      leading: const CircleAvatar(
-        radius: 30,
-        backgroundImage: AssetImage('assets/images/logo.png'),
+      leading: CircleAvatar(
+        radius: 30.r,
+        backgroundImage: const AssetImage('assets/images/logo.png'),
       ),
       title: Text(
         'User name',
@@ -21,7 +22,7 @@ class RecentStatus extends StatelessWidget {
       ),
       subtitle: Text(
         "Today 12:00 PM",
-        style: TextStyle(color: Colors.grey[600]),
+        style: TextStyle(color: Colors.grey[600],fontSize: 14.sp),
       ),
     );
        },
