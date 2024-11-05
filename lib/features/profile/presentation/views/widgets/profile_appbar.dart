@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileAppbar extends StatelessWidget implements PreferredSizeWidget{
   const ProfileAppbar({super.key});
@@ -6,7 +7,7 @@ class ProfileAppbar extends StatelessWidget implements PreferredSizeWidget{
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text('Profile'),
+      title: Text('Profile',style: TextStyle(fontSize: 25.sp),),
     );
   }
   @override
