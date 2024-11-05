@@ -8,7 +8,7 @@ import 'package:chat_app/features/home/presentation/views/home_view.dart';
 import 'package:flutter/material.dart';
 
 class LoginBody extends StatefulWidget {
-  LoginBody({super.key});
+  const LoginBody({super.key});
 
   @override
   State<LoginBody> createState() => _LoginBodyState();
@@ -37,9 +37,9 @@ class _LoginBodyState extends State<LoginBody> {
             children: [
               const LogoWidget(),
               const LoginTitle(),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.13),
               EmailField(emailController: emailController),
-              const SizedBox(height: 20),
+              SizedBox(height:MediaQuery.of(context).size.height * 0.018),
               PasswordField(
                   passwordController: passwordController,
                   toogleVisibility: () {
@@ -48,14 +48,14 @@ class _LoginBodyState extends State<LoginBody> {
                     });
                   },
                   isPasswordVisible: isPasswordVisible),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.13),
               LoginButton(
                   onScuccess: () {
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const HomeView()));
                   },
                   emailController: emailController,
                   passwordController: passwordController),
-              const SizedBox(height: 20),
+              SizedBox(height:MediaQuery.of(context).size.height * 0.018),
               const RegisterRow(),
             ],
           ),
