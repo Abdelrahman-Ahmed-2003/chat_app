@@ -39,14 +39,13 @@ class _LoginBodyState extends State<SignupBody> {
             children: [
               const LogoWidget(),
               const SignupTitle(),
-              //SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-              const SizedBox(height: 20),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.04),
               UsernameField(usernameController: usernameController),
-              const SizedBox(height: 20),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
               EmailField(emailController: emailController),
-              const SizedBox(height: 20),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
               PhoneField(phoneController: phoneController),
-              const SizedBox(height: 20),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
               PasswordField(
                   passwordController: passwordController,
                   toogleVisibility: () {
@@ -55,8 +54,7 @@ class _LoginBodyState extends State<SignupBody> {
                     });
                   },
                   isPasswordVisible: isPasswordVisible),
-              const SizedBox(height: 20),
-              //SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.04),
               SignupButton(
                 onScuccess: () {
                   Navigator.pushReplacement(
@@ -69,7 +67,7 @@ class _LoginBodyState extends State<SignupBody> {
                 phoneController: phoneController,
                 usernameController: usernameController,
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
               const LoginRow(),
             ],
           ),
