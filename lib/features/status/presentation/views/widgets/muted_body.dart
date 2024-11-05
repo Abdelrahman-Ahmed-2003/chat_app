@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'muted_status.dart'; // Assuming this is the correct path to MutedStatus widget
 
 class MutedBody extends StatefulWidget {
@@ -20,9 +21,9 @@ class _MutedBodyState extends State<MutedBody> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Muted Status',
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(color: Colors.grey,fontSize: 14.sp),
               ),
               IconButton(
                 onPressed: () {

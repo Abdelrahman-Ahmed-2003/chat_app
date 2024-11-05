@@ -1,5 +1,6 @@
 import 'package:chat_app/features/profile/presentation/views/profile_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class StatusViewAppbar extends StatelessWidget implements PreferredSizeWidget {
   const StatusViewAppbar({
@@ -10,17 +11,17 @@ class StatusViewAppbar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       surfaceTintColor: Colors.transparent,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         side: BorderSide(
           color: Colors.grey,
-          width: 0.5,
+          width: 0.5.w,
         ),
       ),
       backgroundColor: Colors.grey.withOpacity(.05),
-      title: const Text(
+      title: Text(
         'Status',
         style: TextStyle(
-          fontSize: 23,
+          fontSize: 23.sp,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -33,10 +34,10 @@ class StatusViewAppbar extends StatelessWidget implements PreferredSizeWidget {
           position: PopupMenuPosition.under,
           color: Theme.of(context).scaffoldBackgroundColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: const BorderSide(
+            borderRadius: BorderRadius.circular(10.r),
+            side: BorderSide(
               color: Colors.grey,
-              width: 0.5,
+              width: 0.5.w,
             ),
           ),
           itemBuilder: (BuildContext context) {
@@ -48,13 +49,13 @@ class StatusViewAppbar extends StatelessWidget implements PreferredSizeWidget {
                   //   builder: (context) => const NewGroupView(),
                   // ));
                 },
-                child: const Text('New Group',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('New Group',
+                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14.sp)),
               ),
               PopupMenuItem<String>(
                 value: 'Profile',
-                child: const Text('Profile',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('Profile',
+                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14.sp)),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const ProfileView(),
@@ -63,8 +64,8 @@ class StatusViewAppbar extends StatelessWidget implements PreferredSizeWidget {
               ),
               PopupMenuItem<String>(
                 value: 'Logout',
-                child: const Text('Logout',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('Logout',
+                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14.sp)),
                 onTap: () {},
               ),
             ];
