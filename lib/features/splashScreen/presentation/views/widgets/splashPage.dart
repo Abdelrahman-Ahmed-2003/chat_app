@@ -3,7 +3,6 @@ import 'package:chat_app/core/themes/colors_app.dart';
 import 'package:chat_app/core/themes/styles.dart';
 import 'package:chat_app/features/auth/presentation/views/login_view.dart';
 import 'package:flutter/material.dart';
-
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
 
@@ -15,8 +14,6 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-
-    // TODO: implement initState
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const LoginView()));
     });
