@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Photo extends StatelessWidget {
   const Photo({super.key});
@@ -8,22 +9,22 @@ class Photo extends StatelessWidget {
     return Center(
       child: Stack(
         children: [
-          const CircleAvatar(
-            radius: 80,
-            backgroundImage: AssetImage('assets/images/logo.png'),
+          CircleAvatar(
+            radius: 80.r,
+            backgroundImage: const AssetImage('assets/images/logo.png'),
           ),
           Positioned(
             bottom: 0,
             right: 1,
             child: Container(
-              height: 20,
-              width: 20,
+              height: 20.h,
+              width: 20.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
                 border: Border.all(
                   color: Colors.green,
-                  width: 2,
+                  width: 2.w,
                 ),
               ),
               child: Center(
@@ -32,10 +33,10 @@ class Photo extends StatelessWidget {
                   constraints:
                       const BoxConstraints(), // Remove default constraints
                   onPressed: () {},
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.camera_alt,
                     color: Colors.green,
-                    size: 15,
+                    size: MediaQuery.of(context).size.height * 0.018,
                   ),
                 ),
               ),
