@@ -23,14 +23,15 @@ class _MutedBodyState extends State<MutedBody> {
             children: [
               Text(
                 'Muted Status',
-                style: TextStyle(color: Colors.grey,fontSize: 14.sp),
+                style: TextStyle(color: Colors.grey, fontSize: 14.sp),
               ),
               IconButton(
                 onPressed: () {
                   setState(() {
                     // Compare by icon data instead of Icon widget
                     if (arrowIcon.icon == Icons.keyboard_arrow_left) {
-                      arrowIcon = const Icon(Icons.keyboard_arrow_down_outlined);
+                      arrowIcon =
+                          const Icon(Icons.keyboard_arrow_down_outlined);
                     } else {
                       arrowIcon = const Icon(Icons.keyboard_arrow_left);
                     }
@@ -42,8 +43,8 @@ class _MutedBodyState extends State<MutedBody> {
           ),
         ),
         // Show MutedStatus based on icon value
-        arrowIcon.icon == Icons.keyboard_arrow_down_outlined 
-            ? const MutedStatus() 
+        arrowIcon.icon == Icons.keyboard_arrow_down_outlined
+            ? const MutedStatus()
             : Container(),
       ],
     );

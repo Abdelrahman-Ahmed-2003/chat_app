@@ -11,7 +11,10 @@ Widget build(BuildContext context) {
   return const Scaffold(
     appBar: ChatViewAppbar(),
     floatingActionButton: FloatingButton(),
-    body:ChatBody(),
+    body:Padding(
+      padding: EdgeInsets.all(16.0),
+      child: ChatBody(),
+    ),
   );
 }
 }

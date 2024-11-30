@@ -1,5 +1,6 @@
 import 'package:chat_app/core/themes/colors_app.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Widget customText({
   TextEditingController? controller,
@@ -16,8 +17,8 @@ Widget customText({
   bool? enable,
 }) =>
     TextFormField(
-      style: const TextStyle(
-        fontSize: 14,
+      style: TextStyle(
+        fontSize: 14.sp,
       ),
       onTap: onTap,
       enabled: enable,
@@ -27,11 +28,15 @@ Widget customText({
       validator: validator,
       obscureText: obscureText,
       decoration: InputDecoration(
+        labelStyle: TextStyle(fontSize: 14.sp),
         labelText: label,
         hintText: hint,
-        prefixIcon: Icon(prefix),
+        prefixIcon: Icon(
+          prefix,
+          size: 15.w,
+        ),
         suffixIcon: IconButton(
-          icon: Icon(suffix),
+          icon: Icon(suffix,size: 15.w,),
           onPressed: suffixPressed,
         ),
         border: OutlineInputBorder(

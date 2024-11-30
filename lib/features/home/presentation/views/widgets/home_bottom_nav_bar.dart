@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -13,20 +14,23 @@ class HomeBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      selectedLabelStyle: const TextStyle(
+      
+      selectedLabelStyle: TextStyle(
         fontWeight: FontWeight.bold,
+        fontSize: 20.sp
       ),
-      unselectedLabelStyle: const TextStyle(color: Colors.grey),
+      unselectedLabelStyle: TextStyle(color: Colors.grey,fontSize: 17.sp),
       type: BottomNavigationBarType.fixed,
       showUnselectedLabels: true,
       selectedItemColor: Colors.green,
       onTap: onTap,
       currentIndex: currentIndex,
       elevation: 0,
-      items: const <BottomNavigationBarItem>[
+      items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(
             Icons.chat,
+            size: 20.sp,
             color: Colors.green,
           ),
           label: 'Chats',
@@ -34,6 +38,7 @@ class HomeBottomNavBar extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(
+            size: 20.sp,
             Icons.tips_and_updates_rounded,
             color: Colors.green,
           ),
@@ -42,6 +47,7 @@ class HomeBottomNavBar extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(
+            size: 20.sp,
             Icons.call,
             color: Colors.green,
           ),
