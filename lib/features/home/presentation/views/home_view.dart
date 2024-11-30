@@ -1,7 +1,6 @@
 import 'package:chat_app/features/call/presentation/views/call_view.dart';
 import 'package:chat_app/features/chat/presentation/views/chat_view.dart';
 import 'package:chat_app/features/home/presentation/views/widgets/home_bottom_nav_bar.dart';
-import 'package:chat_app/features/chat/presentation/views/widgets/chat_view_appbar.dart';
 import 'package:chat_app/features/status/presentation/views/status_view.dart';
 import 'package:flutter/material.dart';
 

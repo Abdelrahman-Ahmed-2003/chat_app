@@ -10,6 +10,7 @@ class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+       toolbarHeight: 80.h,
       shape: RoundedRectangleBorder(
         side: BorderSide(
           color: Colors.grey,
@@ -83,5 +84,5 @@ class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+   Size get preferredSize => Size.fromHeight(80.h); 
 }
