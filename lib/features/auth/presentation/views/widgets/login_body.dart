@@ -2,6 +2,7 @@ import 'package:chat_app/features/auth/presentation/views/widgets/email_field.da
 import 'package:chat_app/features/auth/presentation/views/widgets/login_button.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/login_title.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/logo_widget.dart';
+import 'package:chat_app/features/auth/presentation/views/widgets/new_user.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/password_field.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/register_row.dart';
 import 'package:chat_app/features/home/presentation/views/home_view.dart';
@@ -39,7 +40,7 @@ class _LoginBodyState extends State<LoginBody> {
               const LoginTitle(),
               SizedBox(height: MediaQuery.of(context).size.height * 0.13),
               EmailField(emailController: emailController),
-              SizedBox(height:MediaQuery.of(context).size.height * 0.018),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.018),
               PasswordField(
                   passwordController: passwordController,
                   toogleVisibility: () {
@@ -50,12 +51,29 @@ class _LoginBodyState extends State<LoginBody> {
                   isPasswordVisible: isPasswordVisible),
               SizedBox(height: MediaQuery.of(context).size.height * 0.13),
               LoginButton(
-                  onScuccess: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const HomeView()));
+                  onScuccess: () async {
+                    NewUser user = NewUser(
+                        emailController: emailController.text,
+                        passwordController: passwordController.text,
+                        usernameController: '',
+                        phoneController: '');
+                    String temp = await user.login();
+                    if (temp == 'ok') {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomeView()));
+                    } else
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              temp),
+                        ),
+                      );
                   },
                   emailController: emailController,
                   passwordController: passwordController),
-              SizedBox(height:MediaQuery.of(context).size.height * 0.018),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.018),
               const RegisterRow(),
             ],
           ),

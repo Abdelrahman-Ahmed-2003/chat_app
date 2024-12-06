@@ -2,8 +2,19 @@ import 'package:chat_app/features/splashScreen/presentation/views/splachScreen.d
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'firebase_options.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+await Supabase.initialize(
+    url: 'https://roxfrdevihyhldyyftfk.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJveGZyZGV2aWh5aGxkeXlmdGZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM0OTQxMzAsImV4cCI6MjA0OTA3MDEzMH0.G0W0aoqAOlmuUXbojtOTI9Q_lEIQpB3ktOdS3eooWTM',
+  );
   runApp(const MyApp());
 }
 

@@ -1,6 +1,7 @@
 import 'package:chat_app/features/auth/presentation/views/widgets/email_field.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/login_row.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/logo_widget.dart';
+import 'package:chat_app/features/auth/presentation/views/widgets/new_user.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/password_field.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/phone_field.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/signup_button.dart';
@@ -56,11 +57,37 @@ class _LoginBodyState extends State<SignupBody> {
                   isPasswordVisible: isPasswordVisible),
               SizedBox(height: MediaQuery.of(context).size.height * 0.04),
               SignupButton(
-                onScuccess: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const HomeView()));
+                onScuccess: () async {
+                  NewUser user = NewUser(
+                      emailController: emailController.text,
+                      passwordController: passwordController.text,
+                      usernameController: usernameController.text,
+                      phoneController: phoneController.text);
+                  String temp = await user.addNewUser();
+                  if (temp == 'ok') {
+                    temp = await user.sendVerefcation();
+                    if (temp == 'ok' && await user.startVerificationCheck()) {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomeView()));
+                    }
+                    else{
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              temp),
+                        ),
+                      );
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              temp),
+                        ),
+                      );
+                  }
                 },
                 emailController: emailController,
                 passwordController: passwordController,
