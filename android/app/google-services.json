@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "70272764878",
+    "project_id": "what-s-app-7bd47",
+    "storage_bucket": "what-s-app-7bd47.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:70272764878:android:5f5e77579a5a44a95db99f",
+        "android_client_info": {
+          "package_name": "com.example.chat_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGDEZY6R2Wqist3GU9mtoST5qf4-eLUyI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

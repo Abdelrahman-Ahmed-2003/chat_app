@@ -1,4 +1,6 @@
+import 'package:chat_app/features/auth/presentation/views/login_view.dart';
 import 'package:chat_app/features/profile/presentation/views/profile_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -71,8 +73,10 @@ class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
                 value: 'Log out',
                 child: Text('Log out',
                     style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15.sp)),
-                onTap: () {
-                  //log out
+                onTap: () async{
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const LoginView()));
                 },
               ),
             ];
