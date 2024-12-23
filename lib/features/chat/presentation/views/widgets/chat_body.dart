@@ -1,77 +1,61 @@
+import 'package:chat_app/core/state_managment/conversation_provider.dart';
+import 'package:chat_app/features/chat_page/presentation/views/chat_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
-class ChatBody extends StatelessWidget {
-  const ChatBody({super.key});
+class ChatBody extends StatefulWidget {
+  @override
+  _ChatBodyState createState() => _ChatBodyState();
+}
+
+class _ChatBodyState extends State<ChatBody> {
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final provider = Provider.of<ConversationProvider>(context, listen: false);
+    await provider.fetchSender();
+    print('phone number of sender issssssssssss');
+    print(provider.sender!['phone_num']); // Fetch sender information
+    await provider.fetchChats(); // Fetch chats for the sender
+  }
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ConversationProvider>(context);
+
+    if (provider.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return ListView.builder(
-      itemCount: 15,
+      itemCount: provider.chats.length,
       itemBuilder: (context, index) {
-        return InkWell(
-          onTap: () {},
-          child: Row(
-            children: [
-              // Leading Avatar
-              CircleAvatar(
-                backgroundColor: Colors.grey,
-                radius: 20.sp,
-                child: Icon(
-                  Icons.person,
-                  size: 18.sp,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(width: 10.w), // Space between avatar and text section
-
-              // Title and Subtitle Section
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'User Name',
-                      style: TextStyle(fontSize: 20.sp),
-                    ),
-                    SizedBox(height: 4.h), // Space between title and subtitle
-                    Row(
-                      children: [
-                        Icon(Icons.done_all,
-                            color: Colors.blueGrey, size: 17.sp),
-                        SizedBox(width: 5.w), // Space between icon and text
-                        Text(
-                          'This is the last message',
-                          style: TextStyle(
-                              color: Colors.blueGrey, fontSize: 14.sp),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // Trailing Time and Notification Section
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '10:00',
-                    style: TextStyle(fontSize: 14.sp),
-                  ),
-                  SizedBox(
-                      height: 8.h), // Space between time and notification icon
-                  CircleAvatar(
-                    radius: 10.0.sp,
-                    child: Text(
-                      '2',
-                      style: TextStyle(fontSize: 11.sp),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+        final chat = provider.chats[index];
+        return ListTile(
+          leading: CircleAvatar(
+            child: Text(
+              chat.name.isNotEmpty ? chat.name[0].toUpperCase() : '?',
+            ),
           ),
+          title: Text(chat.name),
+          subtitle: Text(
+            chat.lastMessage.content ?? '',
+          ),
+          onTap: () {
+            provider.findConnection = true;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ChatPage(chatId: chat.id),
+              ),
+            );
+          },
         );
       },
     );

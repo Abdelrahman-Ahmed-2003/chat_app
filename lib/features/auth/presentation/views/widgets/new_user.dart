@@ -5,7 +5,7 @@ class NewUser {
   final String emailController;
   final String passwordController;
   final String usernameController;
-  final String phoneController;
+  String phoneController;
   NewUser({
     required this.emailController,
     required this.passwordController,
@@ -44,7 +44,10 @@ class NewUser {
     firebaseAuth.User? user = firebaseAuth.FirebaseAuth.instance.currentUser;
 
     bool isVerified = false;
-
+    phoneController = phoneController.trim().replaceAll(' ', '');
+    print(phoneController);
+    print(
+        'loooooooooooooooooooooooooooooooooooooooooooooooooooook upppppppppppppppppp');
     await Future.doWhile(() async {
       print('Checking email verification...');
       await Future.delayed(const Duration(seconds: 5)); // Wait for 5 seconds
@@ -60,23 +63,18 @@ class NewUser {
       return true; // Continue the loop
     });
 
-    String userId = credential.user!.uid;
-    print('user id is : ' + userId);
+    // // Sign up with Supabase
+    // final response = await Supabase.instance.client.auth.signUp(
+    //   email: emailController,
+    //   password: passwordController, // Use the same password as Firebase
+    // );
 
-    // // Save additional user data in Firestore
-    try {
-      await Supabase.instance.client.from('users').insert({
-        'phone_num': phoneController,
-        'name': usernameController,
-        'email': emailController,
-        'password': passwordController
-      });
-    } catch (e) {
-      print(
-          'errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
-      print(e.toString());
-    }
-
+    await Supabase.instance.client.from('users').insert({
+      'phone_num': phoneController,
+      'name': usernameController,
+      'email': emailController,
+      'password': passwordController,
+    });
     return isVerified; // Return the final verification status
   }
 
@@ -85,9 +83,20 @@ class NewUser {
       final credential = await firebaseAuth.FirebaseAuth.instance
           .signInWithEmailAndPassword(
               email: emailController, password: passwordController);
+      // final response = await Supabase.instance.client.auth.signInWithPassword(
+      //   email: emailController,
+      //   password: passwordController,
+      // );
+
+      // if (response.user != null) {
+      //   return 'ok';
+      // } else
+      //   return 'error occured';
       return 'ok';
     } on firebaseAuth.FirebaseAuthException catch (e) {
       return e.code;
+    } catch (e) {
+      return e.toString();
     }
   }
 }
