@@ -1,4 +1,9 @@
+import 'dart:io';
+
+import 'package:chat_app/features/auth/presentation/views/widgets/upload_photo.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
+import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NewUser {
@@ -6,11 +11,13 @@ class NewUser {
   final String passwordController;
   final String usernameController;
   String phoneController;
+  File? imageFile;
   NewUser({
     required this.emailController,
     required this.passwordController,
     required this.phoneController,
     required this.usernameController,
+    required this.imageFile,
   });
   late firebaseAuth.UserCredential credential;
 
@@ -69,12 +76,24 @@ class NewUser {
     //   password: passwordController, // Use the same password as Firebase
     // );
 
-    await Supabase.instance.client.from('users').insert({
+    // Upload the selected media
+    String? publicUrl;
+    var response = await Supabase.instance.client.from('users').insert({
       'phone_num': phoneController,
       'name': usernameController,
       'email': emailController,
       'password': passwordController,
-    });
+      'image': publicUrl,
+    }).select();
+    //add to storage by id not phone number becauase if phone changed not need to update storage
+    if (imageFile != null) {
+      print('iddddddddddddddddddddddddddddddddddddddddddddddddddddd');
+      print(response[0]['id']);
+      publicUrl =
+          await uploadMediaToSupabase(imageFile!, response[0]['id']);
+      await updateUserProfile(response[0]['id'], publicUrl);
+    }
+
     return isVerified; // Return the final verification status
   }
 

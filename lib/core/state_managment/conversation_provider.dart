@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:chat_app/core/model/chat_model.dart';
-import 'package:chat_app/core/model/connection_model.dart';
+import 'package:chat_app/features/auth/presentation/views/widgets/upload_photo.dart';
+import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -11,143 +13,201 @@ class ConversationProvider extends ChangeNotifier {
 
   List<ChatModel> chats = [];
   bool isLoading = false;
-  bool findConnection = false;
-  List<Map<String, dynamic>> messages = [];
+  bool findChat = false;
+  List<Message> messageList = [];
+  ChatModel? activeChat;
   Map<String, dynamic>? sender;
-  ConnectionModel? activeConnection;
-  String? conversationId;
+  List<Map<String, dynamic>>? receivers;
 
   StreamSubscription<dynamic>? _messageSubscription;
+  StreamSubscription<List<Map<String, dynamic>>>? _chatSubscription;
 
-  // Fetch receiver's UUID using phone number
-  Future<String?> fetchReceiverId(String receiverPhone) async {
-    try {
-      final response = await supabase
-          .from('users')
-          .select('id')
-          .eq('phone_num', receiverPhone)
-          .maybeSingle();
+  bool _isInitialized = false; // Prevent re-initialization
 
-      if (response != null) {
-        return response['id'] as String;
-      }
-    } catch (e) {
-      debugPrint('Error fetching receiver ID: $e');
-    }
-    return null;
+  Future<void> setActiveChat(ChatModel chat) async {
+    activeChat = chat;
   }
 
-  // Check for existing connection or chat
-  Future<String?> findExistingConnection(String receiverPhone) async {
+  Future<void> setActiveChatFromMap(Map<String, dynamic> chat) async {
+    activeChat = ChatModel.fromJson(chat);
+  }
+
+  Future<Map<String, dynamic>?> fetchReceiverInfoBy({
+    required String name,
+    required String value,
+  }) async {
+    try {
+      final response =
+          await supabase.from('users').select('*').eq(name, value).single();
+      return response;
+    } catch (e) {
+      debugPrint('Error fetching receiver ID: $e');
+      return null;
+    }
+  }
+
+  Future<void> updateSenderData(
+      String name, String phone, File? imageFile) async {
+    sender!['name'] = name;
+    sender!['phone_num'] = phone;
+    var response = await supabase.from('users').update({
+      'name': name,
+      'phone_num': phone,
+    }).eq('id', sender!['id']);
+    if (imageFile != null) {
+      print('iddddddddddddddddddddddddddddddddddddddddddddddddddddd');
+      print(response[0]['id']);
+      final supabase = Supabase.instance.client;
+
+      // Construct the path to the photo
+      final pathToDelete =
+          'users/${response[0]['id']}/profile_photos/'; // Adjust this path as necessary
+
+      // Delete the file from Supabase storage
+      await supabase.storage.from('user_photo').remove([pathToDelete]);
+      var publicUrl = await uploadMediaToSupabase(imageFile, response[0]['id']);
+      await updateUserProfile(response[0]['id'], publicUrl);
+    }
+    notifyListeners();
+  }
+
+  // Fetch a single receiver from chat ID (for individual chats)
+  Future<List<String?>> fetchReceiversFromChatId(
+      {required String chatId}) async {
+    try {
+      final response = await supabase
+          .from('user_chat')
+          .select('user_phone')
+          .eq('chat_id', chatId);
+      List<String> phones = [];
+      for (var item in response) {
+        if (item['user_phone'] != sender!['phone_num']) {
+          phones.add(item['user_phone']);
+        }
+      }
+      // Assuming the first entry is the sender, return the second entry as the receiver
+      // if (response[0]['user_phone'] != sender!['phone_num']) {
+      //   return response[0]['user_phone'];
+      // } else {
+      //   return response[1]['user_phone'];
+      // }
+      return phones;
+    } catch (e) {
+      debugPrint('Error fetching receiver ID: $e');
+      return [];
+    }
+  }
+
+// Fetch groups from chat ID (for group chats)
+  Future<List<String>?> fetchGroupsFromChatId({required String chatId}) async {
+    try {
+      final response = await supabase
+          .from('user_chat')
+          .select('user_phone')
+          .eq('chat_id', chatId);
+
+      // Return a list of group names
+      return response.map((group) => group['group_name'] as String).toList();
+    } catch (e) {
+      debugPrint('Error fetching group names: $e');
+      return null;
+    }
+  }
+
+  // Check for existing connection
+  Future<String?> findExistingChat() async {
     if (sender == null) {
       await fetchSender();
     }
-    findConnection = false;
-    final receiverId = await fetchReceiverId(receiverPhone);
-    if (receiverId == null) {
-      debugPrint('Receiver not found for phone number: $receiverPhone');
-      return null;
-    }
-
-    print(
-        'Querying with sender_id: ${sender!['id']} and receiver_id: $receiverId');
-
+    findChat = false;
     try {
-      final response = await supabase
-          .from('connection')
-          .select('chat_id, recivers_id')
-          .eq('sender_id', sender!['id']);
-      // .eq('recivers_id->>id', receiverId) // JSON path query
+      final user1Chats = await supabase
+          .from('user_chat')
+          .select('chat_id')
+          .filter('user_phone', 'eq', sender!['phone_num']);
 
-      print('response issssssssssssssssssssssssssss');
-      print(response);
-      String chatId = '';
-      if (response.isNotEmpty) {
-        for (Map rec in response) {
-          print(rec);
-          if (rec['recivers_id'].length == 1 &&
-              receiverId == rec['recivers_id'].first['id']) {
-            chatId = rec['chat_id'];
-            print('chat id in loop issssssssssssssss');
-            findConnection = true;
-            print(chatId);
-            break;
-          }
-        }
-        debugPrint('chat_id isssssssssssssssssssssssssssss');
-        // debugPrint(response['chat_id']);
-        findConnection = true;
-        // return response['chat_id'] as String;
-        return chatId;
+      final receiverPhones =
+          receivers!.map((receiver) => receiver['phone_num']).toList();
+      final user2Chats = await supabase
+          .from('user_chat')
+          .select('chat_id')
+          .inFilter('user_phone',
+              receiverPhones); // Use inFilter for multiple receivers
+
+      // Extract chat IDs
+      final user1ChatIds = user1Chats.map((chat) => chat['chat_id']).toSet();
+      final user2ChatIds = user2Chats.map((chat) => chat['chat_id']).toSet();
+
+      // Check for intersection
+      final intersection = user1ChatIds.intersection(user2ChatIds);
+      final hasChat = intersection.isNotEmpty;
+      if (hasChat) {
+        findChat = true;
+        return intersection.first;
       } else {
-        debugPrint('not chat foundeddddddddddddddddddddddddddddddddddd');
+        return null;
       }
     } catch (e) {
       debugPrint('Error during query: $e');
+      return null;
     }
-    return null;
   }
 
-  // Create a new connection
-  // Create a new connection with multiple receivers
-  Future<String?> createConnection({
-    required String receiverPhone,
-    required String idMessage,
-  }) async {
+  Future<String?> createConversation(Message mes) async {
+    final response = await supabase
+        .from('conversations')
+        .insert({
+          'messages': [mes], // Insert the message as a list
+        })
+        .select('conversation_id')
+        .single();
+    return response['conversation_id'];
+  }
+
+  Future<String?> createChat(String conversationId, Message lastMessage,
+      String name, bool isGroup, String? image) async {
     if (sender == null) {
       await fetchSender();
     }
-
-    final receiverId = await fetchReceiverId(receiverPhone);
-    if (receiverId == null) {
-      debugPrint('Cannot create connection. Receiver not found.');
-      return null;
-    }
-
-    // Create chat record first
-    final chatResponse = await supabase
-        .from('chat')
-        .insert({
-          'id_message': idMessage,
-          'name': '', // Customize chat name if needed
-          'image': '', // Add an image if required
-          'last_message': {}, // Empty initially
-        })
-        .select('id') // Ensure we get the chat ID
-        .single();
-
-    // Extract the chat ID from the response
-    final chatId = chatResponse['id'];
-
-    if (chatId == null) {
-      debugPrint('Failed to create chat. No chat ID returned.');
-      return null;
-    }
-
-    // Create connection record with valid chat_id
     try {
-      await supabase.from('connection').insert({
-        'sender_id': sender!['id'],
-        'recivers_id': [
-          {'id': receiverId}, // Add the receiver as part of the array
-        ],
-        'chat_id': chatId, // Use the correct chat_id here
-        'unread_messages': 0, // Initialize unread messages to 0
-      });
-
-      return chatId; // Return the chat ID after successful creation
+      final response = await supabase
+          .from('chat')
+          .insert({
+            'name': isGroup ? name : null, // Customize chat name if needed
+            'image': image, // Add an image if required
+            'last_message': lastMessage, // Empty initially
+            'conversation_id': conversationId,
+            'is_group': isGroup,
+          })
+          .select()
+          .single();
+      await setActiveChatFromMap(response);
+      return response['chat_id'];
     } catch (e) {
-      debugPrint('Error creating connection: $e');
+      debugPrint('Error creating connection: ${e.toString()}');
       return null;
     }
   }
 
+  // Create user chat for multiple receivers
+  Future<void> createUserChat(String chatId) async {
+    try {
+      await supabase.from('user_chat').insert({
+        'user_phone': sender!['phone_num'],
+        'chat_id': chatId,
+      });
 
-
-  //create chat and return id of chat
-  
-
-
+      // Insert all receivers into user_chat
+      for (var receiver in receivers!) {
+        await supabase.from('user_chat').insert({
+          'user_phone': receiver['phone_num'],
+          'chat_id': chatId,
+        });
+      }
+    } catch (e) {
+      debugPrint('Error creating user chat: $e');
+    }
+  }
 
   // Fetch sender details
   Future<void> fetchSender() async {
@@ -167,165 +227,305 @@ class ConversationProvider extends ChangeNotifier {
     }
   }
 
-  // Fetch all chats for the user
-  Future<void> fetchChats() async {
+  Future<void> fetchInitialMessages(String chatId) async {
     try {
-      isLoading = true;
-      notifyListeners();
-
-      if (sender == null) await fetchSender();
-
-      final response = await supabase
-          .from('connection')
-          .select('*, chat(*)')
-          .eq('sender_id', sender!['id']);
-
-      print('response of fetch cahtsssssssssssssssssssssssss is:');
-      print(response);
-      if (response.isNotEmpty) {
-        chats = response.map<ChatModel>((chatData) {
-          debugPrint(
-              'print some dataaaaaaaaaaaaaaaaaa in fetch chatssssssssss');
-          debugPrint(chatData.toString());
-          debugPrint(chatData['chat']['name'].toString());
-          debugPrint(chatData['chat']['last_message'].toString());
-          return ChatModel.fromJson(chatData['chat']);
-        }).toList();
-        debugPrint(
-            'all fetched chatssssssssssssssssssssssssssssssss for sender');
-        debugPrint(chats.toString());
-      }
-    } catch (e) {
-      debugPrint('Error fetching chats: $e');
-    } finally {
-      isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<String?> getMessageIdFromChatId(String chatId) async {
-    try {
-      final response = await supabase
-          .from('chat')
-          .select('id_message')
-          .eq('id', chatId)
-          .maybeSingle();
-
-      if (response == null) {
-        debugPrint('Error fetching id_message: ');
-        return null;
+      // Get conversation ID from chatId
+      String? conversationId = await getConversationIdFromChatId(chatId);
+      if (conversationId == null) {
+        debugPrint('No conversation ID found for chatId: $chatId');
+        return;
       }
 
-      final idMessage = response['id_message'] as String?;
-      debugPrint('id_message issss : ' + response['id_message']);
-      return idMessage;
+      // Fetch initial messages
+      final response = await supabase
+          .from('conversations')
+          .select()
+          .eq('conversation_id', conversationId)
+          .single();
+
+      if (response != null && response['messages'] != null) {
+        messageList.clear();
+        List<dynamic> messages =
+            List<Map<String, dynamic>>.from(response['messages'] ?? []);
+
+        for (var message in messages) {
+          var replyMessageData = message['reply_message'];
+          ReplyMessage replyMessage = ReplyMessage(
+            messageId: replyMessageData?['id'],
+            message: replyMessageData?['message'],
+            replyBy: replyMessageData?['replyBy'],
+            replyTo: replyMessageData?['replyTo'],
+            messageType: replyMessageData?['message_type'] == 'text'
+                ? MessageType.text
+                : MessageType.voice,
+            voiceMessageDuration: replyMessageData?['voice_message_duration'],
+          );
+
+          Message newMessage = Message(
+            replyMessage: replyMessage,
+            id: message['id'],
+            message: message['message'],
+            createdAt: DateTime.parse(message['createdAt']),
+            sentBy: message['sentBy'],
+          );
+
+          messageList.add(newMessage);
+        }
+        notifyListeners();
+      }
     } catch (e) {
-      debugPrint('Error getting id_message: $e');
-      return null;
+      debugPrint('Error fetching initial messages: $e');
     }
   }
 
   // Start listening for new messages
-  void listenToMessages(String chatId) async {
+  Future<void> listenToConversation(String chatId) async {
     // Cancel any existing subscriptions before starting a new one
     _messageSubscription?.cancel();
 
-    // Step 1: Get id_message from chatId
-    String? messageId = await getMessageIdFromChatId(chatId);
-    if (messageId == null) {
-      debugPrint('No id_message found for chatId: $chatId');
+    // Get conversation ID from chatId
+    String? conversationId = await getConversationIdFromChatId(chatId);
+    if (conversationId == null) {
+      debugPrint('No conversation ID found for chatId: $chatId');
       return;
     }
 
-    // Step 2: Start listening to messages for the given id_message
+    // Start listening to messages for the given conversation ID
     _messageSubscription = supabase
         .from('conversations')
         .stream(primaryKey: ['id'])
-        .eq('id', messageId)
+        .eq('conversation_id', conversationId)
         .listen((data) {
           if (data.isNotEmpty) {
-            print('data in listen function issssssssssssssssssssssssssss');
-            print(data.toString());
-            messages =
+            List<dynamic> messages =
                 List<Map<String, dynamic>>.from(data.first['messages'] ?? []);
+
+            // Only process messages that aren't already in messageList
+            for (var message in messages) {
+              if (!messageList.any((m) => m.id == message['id'])) {
+                var replyMessageData = message['reply_message'];
+                ReplyMessage replyMessage = ReplyMessage(
+                  messageId: replyMessageData?['id'],
+                  message: replyMessageData?['message'],
+                  replyBy: replyMessageData?['replyBy'],
+                  replyTo: replyMessageData?['replyTo'],
+                  messageType: replyMessageData?['message_type'] == 'text'
+                      ? MessageType.text
+                      : MessageType.voice,
+                  voiceMessageDuration:
+                      replyMessageData?['voice_message_duration'],
+                );
+
+                Message newMessage = Message(
+                  replyMessage: replyMessage,
+                  id: message['id'],
+                  message: message['message'],
+                  createdAt: DateTime.parse(message['createdAt']),
+                  sentBy: message['sentBy'],
+                );
+
+                messageList.add(newMessage);
+              }
+            }
+            print('last lineeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+            print(messageList.length);
             notifyListeners();
           }
+        }, onError: (error) {
+          debugPrint('Error listening to conversation: $error');
         });
   }
 
-  // Send a message
-  Future<void> sendMessage(String chatId, String content) async {
-    if (content.trim().isEmpty) return;
-
-    debugPrint('in send message functionnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn');
-    final newMessage = {
-      'type': 'string',
-      'content': content,
-      'time': DateTime.now().toIso8601String(),
-    };
-    String idMessage = '';
+  Future<void> initializeChats(Map<String, String> contacts) async {
+    if (_isInitialized) return; // Prevent re-initialization
+    _isInitialized = true;
 
     try {
-      if (!findConnection) {
-        final responseIdMessage = await supabase
-            .from('conversations')
-            .insert({
-              'messages': [newMessage], // Insert the message as a list
-            })
-            .select('id')
-            .single();
-
-        idMessage = responseIdMessage['id'];
-
-        await createConnection(
-          receiverPhone: chatId,
-          idMessage: idMessage,
-        );
-      } else {
-        final chatResponse = await supabase
-            .from('chat')
-            .select('id_message')
-            .eq('id', chatId)
-            .single();
-
-        idMessage = chatResponse['id_message'];
+      if (sender == null) {
+        await fetchSender();
       }
 
+      // Cancel existing subscription if any
+      if (_chatSubscription != null) {
+        await _chatSubscription!.cancel();
+      }
+
+      // Start listening to user_chat changes
+      final userChatStream = supabase
+          .from('user_chat')
+          .stream(primaryKey: ['id']).eq('user_phone', sender!['phone_num']);
+
+      userChatStream.listen((userChatData) async {
+        List<String> chatIds =
+            userChatData.map((e) => e['chat_id'] as String).toList();
+
+        // Update chat subscription when user_chat changes
+        await _updateChatSubscription(chatIds, contacts);
+      });
+    } catch (e) {
+      debugPrint('Error initializing chats: $e');
+    }
+  }
+
+  Future<void> _updateChatSubscription(
+      List<String> chatIds, Map<String, String> contacts) async {
+    try {
+      // Cancel existing chat subscription if any
+      await _chatSubscription?.cancel();
+
+      // Create new subscription
+      _chatSubscription = supabase
+          .from('chat')
+          .stream(primaryKey: ['id'])
+          .inFilter('chat_id', chatIds)
+          .listen((chatModels) async {
+            await _processChatUpdates(chatModels, contacts);
+          });
+    } catch (e) {
+      debugPrint('Error updating chat subscription: $e');
+    }
+  }
+
+  Future<void> _processChatUpdates(
+      List<dynamic> chatModels, Map<String, String> contacts) async {
+    try {
+      List<ChatModel> newChats = [];
+      for (var chat in chatModels) {
+        List<String?> phones = await fetchReceiversFromChatId(chatId: chat['chat_id']);
+        for(String? phone in phones){
+          if (phone != null) {
+          if (chat['is_group'] == false) {
+            String contactName = await _getContactName(phone, contacts);
+            print(
+                'nammmmmmmeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+            print(chat['name']);
+            print(contactName);
+            // Update chat name if it's different
+
+            chat['name'] = contactName;
+
+            var userImage = await supabase
+                .from('users')
+                .select('image')
+                .eq('phone_num', phone)
+                .single();
+            chat['image'] = userImage['image'];
+            print(
+                'in linstnerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+            print(userImage['image']);
+          }
+
+          newChats.add(ChatModel.fromJson(chat));
+        }
+        }
+      }
+      // Only update and notify if there are actual changes
+      if (!_areChatsEqual(chats, newChats)) {
+        chats = newChats;
+        print(
+            'Updating chat listttttttttttttttttttttttttttttttttttttttttttttttttttttttttt...');
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error processing chat updates: $e');
+    }
+  }
+
+  // Other methods remain unchanged...
+
+  @override
+  void dispose() {
+    _chatSubscription?.cancel();
+    _messageSubscription?.cancel();
+    super.dispose();
+  }
+
+  // Add this method to handle contact name checking
+  Future<String> _getContactName(
+      String phone, Map<String, String> contacts) async {
+    if (contacts[phone] == null || contacts[phone]!.isEmpty) {
+      var receiver = await fetchReceiverInfoBy(name: 'phone_num', value: phone);
+      return receiver?['name'] ?? '';
+    }
+    return contacts[phone]!;
+  }
+
+  // Helper method to compare chat lists
+  bool _areChatsEqual(List<ChatModel> list1, List<ChatModel> list2) {
+    if (list1.length != list2.length) return false;
+    for (int i = 0; i < list1.length; i++) {
+      if (list1[i].lastMessage.content != list2[i].lastMessage.content) {
+        print(list1[i].chatId + '      ' + list2[i].chatId);
+        print(list1[i].name + '      ' + list2[i].name);
+        print('${list1[i].lastMessage}      ${list2[i].lastMessage}');
+        return false;
+      }
+    }
+    return true;
+  }
+  // Single method to handle both initial fetch and updates
+
+  Future<String?> getConversationIdFromChatId(String chatId) async {
+    try {
+      final response = await supabase
+          .from('chat')
+          .select()
+          .eq('chat_id', chatId)
+          .maybeSingle();
+
+      if (response == null) {
+        return null;
+      }
+      // await setActiveChat(response);
+      final idMessage = response['conversation_id'] as String?;
+      return idMessage;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Create conversation
+
+  // Send a message
+  Future<void> sendMessage(Message message) async {
+    debugPrint('in send message function');
+    try {
       // Retrieve the existing messages or initialize with an empty list
       final existingMessagesResponse = await supabase
           .from('conversations')
           .select('messages')
-          .eq('id', idMessage)
+          .eq('conversation_id', activeChat!.conversationId)
           .single();
 
       final existingMessages =
-          existingMessagesResponse['messages'] as List<dynamic>? ?? [];
-      final updatedMessages = [...existingMessages, newMessage];
-
-      final updateResponse = await supabase
+          (existingMessagesResponse['messages'] as List<dynamic>?) ?? [];
+      final updatedMessages = [...existingMessages, message];
+      await supabase
           .from('conversations')
-          .update({'messages': updatedMessages}).eq('id', idMessage);
-
-      if (updateResponse.error != null) {
-        debugPrint(
-            'Error updating existing chat: ${updateResponse.error!.message}');
-        throw updateResponse.error!;
-      }
-
+          .update({'messages': updatedMessages}).eq(
+              'conversation_id', activeChat!.conversationId);
       debugPrint('Message added to existing chat.');
-
-      // Add the new message to the local messages list after the conditions
-      messages.add(newMessage);
-      notifyListeners();
+      await supabase.from('chat').update({
+        'last_message': message,
+      }).eq('chat_id', activeChat!.chatId);
     } catch (e) {
       debugPrint('Error sending message: $e');
     }
   }
 
-  // Dispose of listeners
-  @override
-  void dispose() {
-    _messageSubscription?.cancel();
-    super.dispose();
+  Future<void> fetchChat(String chatId) async {
+    final response =
+        await supabase.from('chat').select().eq('chat_id', chatId).single();
+    activeChat = ChatModel.fromJson(response);
+  }
+
+  void clear() {
+    chats.clear();
+    messageList.clear();
+    sender = null;
+    receivers = null;
+    isLoading = false;
+    findChat = false;
+    notifyListeners();
   }
 }

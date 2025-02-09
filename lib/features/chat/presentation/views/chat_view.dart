@@ -8,11 +8,11 @@ class ChatView extends StatelessWidget {
 
  @override
 Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: const ChatViewAppbar(),
+  return const Scaffold(
+    appBar: ChatViewAppbar(),
     floatingActionButton: FloatingButton(),
     body:Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.0),
       child: ChatBody(),
     ),
   );

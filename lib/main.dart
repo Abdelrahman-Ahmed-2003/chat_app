@@ -1,3 +1,4 @@
+import 'package:chat_app/core/state_managment/contacts_provider.dart';
 import 'package:chat_app/core/state_managment/conversation_provider.dart';
 import 'package:chat_app/features/splashScreen/presentation/views/splachScreen.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'firebase_options.dart';
 
@@ -22,6 +24,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ConversationProvider()),
+        ChangeNotifierProvider(create: (_) => ContactsProvider()),
       ],
       child: const MyApp(),
     ),

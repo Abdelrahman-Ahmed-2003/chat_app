@@ -1,23 +1,21 @@
-import 'package:chat_app/features/auth/presentation/views/widgets/check_contact.dart';
+import 'package:chat_app/core/state_managment/contacts_provider.dart';
 import 'package:chat_app/features/chat/presentation/views/widgets/all_contacts.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:provider/provider.dart';
 
 class FloatingButton extends StatelessWidget {
   const FloatingButton({super.key});
 
   @override
   Widget build(BuildContext context) {
+    var provider = context.read<ContactsProvider>();
     return FloatingActionButton(
       onPressed: () async {
         debugPrint('get app contactssssssssssssssssssssss');
-        List<Contact> contacts = await getAppContacts(context);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AllContacts(
-                      appContacts: contacts,
-                    )));
+        
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const AllContacts()));
+        provider.getAppContacts(context);
       },
       child: const Icon(Icons.message),
     );

@@ -1,27 +1,38 @@
 class ChatModel {
-  String id;
+  String chatId;
+  int id;
   String name;
   String? image;
   LastMessage lastMessage;
-  String? id_message;
+  String conversationId;
+  bool isGroup;
 
   ChatModel({
+    required this.chatId,
     required this.id,
     required this.name,
     this.image,
     required this.lastMessage,
-    this.id_message,
+    required this.conversationId,
+    required this.isGroup,
   });
 
   // Factory constructor to create a ChatModel from a JSON map
   factory ChatModel.fromJson(Map<String, dynamic> json) {
-    return ChatModel(
-      id: json['id'] as String,
-      name: (json['name'] as String?) ?? "",
-      image: json['image'] as String?,
+    print('in chat model from jsonnnnnnnnnnnnnnnnnnnnnnnnn');
+    print(json.toString());
+    var chatModel = ChatModel(
+      isGroup: json['is_group'] ?? false,
+      chatId: json['chat_id'],
+      id: json['id'],
+      name: (json['name']) ?? '',
+      image: json['image'] ?? '',
       lastMessage: LastMessage.fromJson(json['last_message']),
-      id_message: json['id_message'] as String,
+      conversationId: json['conversation_id'],
     );
+    print('chat modeeeeeeellllllllllllll is');
+    print(chatModel);
+    return chatModel;
   }
 
   // Method to convert a ChatModel instance to a JSON map
@@ -31,20 +42,20 @@ class ChatModel {
       'name': name,
       'image': image,
       'lastMessage': lastMessage.toJson(),
-      'id_message': id_message,
+      'conversationId': conversationId,
     };
   }
 
   @override
   String toString() {
-    return 'ChatModel(id: $id, name: $name, image: $image, lastMessage: $lastMessage, id_message: $id_message)';
+    return 'ChatModel(id: $id, name: $name, image: $image, lastMessage: $lastMessage, conversationId: $conversationId)';
   }
 }
 
 class LastMessage {
-  String? messageType;
-  String? content;
-  DateTime? time;
+  String messageType;
+  String content;
+  DateTime time;
 
   LastMessage({
     required this.messageType,
@@ -54,11 +65,14 @@ class LastMessage {
 
   // Factory constructor to create a LastMessage from a JSON map
   factory LastMessage.fromJson(Map<String, dynamic> json) {
-    return LastMessage(
-      messageType: json['messageType'],
-      content: json['content'],
-      time: json['time'] == null ? null:DateTime.parse(json['time']),
+    var lastMessage = LastMessage(
+      messageType: json['message_type'],
+      content: json['message'],
+      time: DateTime.parse(json['createdAt']),
     );
+    print('last messageeeeeeeeeeeeeeeeeeeeeee');
+    print(lastMessage.toString());
+    return lastMessage;
   }
 
   // Method to convert a LastMessage instance to a JSON map
@@ -66,7 +80,7 @@ class LastMessage {
     return {
       'messageType': messageType,
       'content': content,
-      'time': time?.toIso8601String(),
+      'time': time.toIso8601String(),
     };
   }
 
