@@ -56,7 +56,7 @@ class _LoginBodyState extends State<LoginBody> {
                         emailController: emailController.text,
                         passwordController: passwordController.text,
                         usernameController: '',
-                        phoneController: '');
+                        phoneController: '', imageFile: null);
                     String temp = await user.login();
                     if (temp == 'ok') {
                       Navigator.pushReplacement(

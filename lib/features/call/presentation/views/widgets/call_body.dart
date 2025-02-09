@@ -1,3 +1,4 @@
+import 'package:chat_app/features/call/presentation/views/widgets/call.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -6,7 +7,8 @@ class CallBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return Call();
+    ListView.builder(
       itemCount: 15,
       itemBuilder: (context, index) {
         return InkWell(

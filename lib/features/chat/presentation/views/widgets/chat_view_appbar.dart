@@ -1,8 +1,13 @@
+import 'package:chat_app/core/state_managment/contacts_provider.dart';
+import 'package:chat_app/core/state_managment/conversation_provider.dart';
 import 'package:chat_app/features/auth/presentation/views/login_view.dart';
+import 'package:chat_app/features/chat/presentation/views/widgets/new_group.dart';
+import 'package:chat_app/features/chat/presentation/views/widgets/search.dart';
 import 'package:chat_app/features/profile/presentation/views/profile_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
   const ChatViewAppbar({
@@ -30,9 +35,13 @@ class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.search),
-          onPressed: () {},
-        ),
-        PopupMenuButton<String>(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Search()),
+            );
+          },
+        ),PopupMenuButton<String>(
           elevation: 0,
           position: PopupMenuPosition.under,
 
@@ -52,9 +61,9 @@ class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
               PopupMenuItem<String>(
                 value: 'New Group',
                 onTap: () {
-                  // Navigator.of(context).push(MaterialPageRoute(
-                  //   builder: (context) => const NewGroupView(),
-                  // ));
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const NewGroup(),
+                  ));
                 },
                 child: Text('New Group',
                     style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15.sp)),
@@ -74,6 +83,10 @@ class ChatViewAppbar extends StatelessWidget implements PreferredSizeWidget {
                 child: Text('Log out',
                     style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15.sp)),
                 onTap: () async{
+                  var provider = context.read<ConversationProvider>();
+                  var contactProvider = context.read<ContactsProvider>();
+                  provider.clear();
+                  contactProvider.clear();
                   await FirebaseAuth.instance.signOut();
                   Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => const LoginView()));

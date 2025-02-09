@@ -9,13 +9,13 @@ class UsernameField extends StatelessWidget {
   Widget build(BuildContext context) {
     return customText(
       type: TextInputType.name,
-      label: 'Enter your name',
-      hint: 'Your name',
+      label: 'Enter name',
+      hint: 'name',
       prefix: Icons.person,
       controller: usernameController,
       validator: (value) {
         if (value!.isEmpty) {
-          return 'Please enter your name';
+          return 'Please enter name';
         }
         return null;
       },

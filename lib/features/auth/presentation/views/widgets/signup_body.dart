@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:chat_app/features/auth/presentation/views/widgets/email_field.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/login_row.dart';
-import 'package:chat_app/features/auth/presentation/views/widgets/logo_widget.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/new_user.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/password_field.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/phone_field.dart';
+import 'package:chat_app/features/auth/presentation/views/widgets/photo.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/signup_button.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/signup_title.dart';
 import 'package:chat_app/features/auth/presentation/views/widgets/username_field.dart';
@@ -14,14 +16,15 @@ class SignupBody extends StatefulWidget {
   const SignupBody({super.key});
 
   @override
-  State<SignupBody> createState() => _LoginBodyState();
+  State<SignupBody> createState() => _SignupBodyState();
 }
 
-class _LoginBodyState extends State<SignupBody> {
+class _SignupBodyState extends State<SignupBody> {
   TextEditingController emailController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
+  File? imageFile;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -38,7 +41,16 @@ class _LoginBodyState extends State<SignupBody> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const LogoWidget(),
+              Padding(
+                  padding: const EdgeInsets.only(bottom: 80, top: 20),
+                  child: Photo(
+                  uploadedPhoto: imageFile,
+                  onPhotoSelected: (File? newPhoto) {
+                    setState(() {
+                      imageFile = newPhoto; // Update the imageFile state
+                    });
+                  },
+                ),),
               const SignupTitle(),
               SizedBox(height: MediaQuery.of(context).size.height * 0.04),
               UsernameField(usernameController: usernameController),
@@ -62,31 +74,31 @@ class _LoginBodyState extends State<SignupBody> {
                       emailController: emailController.text,
                       passwordController: passwordController.text,
                       usernameController: usernameController.text,
-                      phoneController: phoneController.text);
+                      phoneController: phoneController.text,
+                      imageFile: imageFile);
                   String temp = await user.addNewUser();
                   if (temp == 'ok') {
+                    print('imaageeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+                    print(imageFile.toString());
                     temp = await user.sendVerefcation();
                     if (temp == 'ok' && await user.startVerificationCheck()) {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const HomeView()));
-                    }
-                    else{
+                    } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
-                              temp),
+                          content: Text(temp),
                         ),
                       );
                     }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                              temp),
-                        ),
-                      );
+                      SnackBar(
+                        content: Text(temp),
+                      ),
+                    );
                   }
                 },
                 emailController: emailController,

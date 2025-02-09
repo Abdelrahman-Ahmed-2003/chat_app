@@ -1,79 +1,113 @@
+import 'package:chat_app/core/model/chat_model.dart';
+import 'package:chat_app/core/state_managment/contacts_provider.dart';
+import 'package:chat_app/core/state_managment/conversation_provider.dart';
+import 'package:chat_app/features/chat_page/presentation/views/chat_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
-class ChatBody extends StatelessWidget {
+class ChatBody extends StatefulWidget {
   const ChatBody({super.key});
 
   @override
+  _ChatBodyState createState() => _ChatBodyState();
+}
+
+class _ChatBodyState extends State<ChatBody> {
+  var scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    print('in init stateeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+    _initializeChats();
+  }
+
+  void _initializeChats() async {
+    final provider = Provider.of<ConversationProvider>(context, listen: false);
+    final contactProvider =
+        Provider.of<ContactsProvider>(context, listen: false);
+    await provider.fetchSender();
+    await provider.initializeChats(contactProvider.contacts);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: 15,
-      itemBuilder: (context, index) {
-        return InkWell(
-          onTap: () {},
-          child: Row(
-            children: [
-              // Leading Avatar
-              CircleAvatar(
-                backgroundColor: Colors.grey,
-                radius: 20.sp,
-                child: Icon(
-                  Icons.person,
-                  size: 18.sp,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(width: 10.w), // Space between avatar and text section
+    print('in chat bodyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy');
 
-              // Title and Subtitle Section
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'User Name',
-                      style: TextStyle(fontSize: 20.sp),
-                    ),
-                    SizedBox(height: 4.h), // Space between title and subtitle
-                    Row(
-                      children: [
-                        Icon(Icons.done_all,
-                            color: Colors.blueGrey, size: 17.sp),
-                        SizedBox(width: 5.w), // Space between icon and text
-                        Text(
-                          'This is the last message',
-                          style: TextStyle(
-                              color: Colors.blueGrey, fontSize: 14.sp),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+    return Consumer<ConversationProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-              // Trailing Time and Notification Section
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '10:00',
-                    style: TextStyle(fontSize: 14.sp),
-                  ),
-                  SizedBox(
-                      height: 8.h), // Space between time and notification icon
-                  CircleAvatar(
-                    radius: 10.0.sp,
-                    child: Text(
-                      '2',
-                      style: TextStyle(fontSize: 11.sp),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+        return ListView.builder(
+          controller: scrollController,
+          itemCount: provider.chats.length,
+          itemBuilder: (context, index) {
+            final chat = provider.chats[index];
+            return ChatListTile(chat: chat);
+          },
         );
       },
     );
+  }
+}
+
+// Separate widget for the list tile
+class ChatListTile extends StatelessWidget {
+  final ChatModel chat;
+
+  const ChatListTile({super.key, required this.chat});
+
+  @override
+  Widget build(BuildContext context) {
+    print('chattttttttttttttttt imageeeeeeeeeeeeeeeeeeeeeeeeeeee');
+    print(chat.image);
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundImage:
+            (chat.image!.isEmpty == false) ? NetworkImage(chat.image!) : null,
+        child: (chat.image!.isEmpty == true)
+            ? Text(chat.name.isNotEmpty ? chat.name[0].toUpperCase() : '?')
+            : null,
+      ),
+      title: Text(chat.name),
+      subtitle: Text(chat.lastMessage.content),
+      onTap: () => _handleChatTap(context, chat),
+    );
+  }
+
+  Future<void> _handleChatTap(BuildContext context, ChatModel chat) async {
+    final provider = Provider.of<ConversationProvider>(context, listen: false);
+    provider.findChat = true;
+
+    List<String?> receiverPhones =
+        await provider.fetchReceiversFromChatId(chatId: chat.chatId);
+    print('receiver phones: $receiverPhones');
+
+    await provider.setActiveChat(chat);
+
+    if (receiverPhones.isNotEmpty) {
+      List<Map<String,dynamic>> receivers = [];
+      for (String? phone in receiverPhones) {
+        var response = await provider.fetchReceiverInfoBy(
+            name: 'phone_num', value: phone!);
+        if (response != null) {
+          receivers.add(response);
+        }
+      }
+      provider.receivers = receivers;
+      print(provider.receivers.toString());
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChatPage(
+            chatId: chat.chatId,
+            nameOfContact: chat.name,
+          ),
+        ),
+      );
+    }
   }
 }
